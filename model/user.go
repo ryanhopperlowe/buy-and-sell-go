@@ -1,12 +1,7 @@
-package user
-
-import (
-	"github.com/dgrijalva/jwt-go"
-	"github.com/ryanhopperlowe/buy-and-sell-go/model"
-)
+package model
 
 type User struct {
-	model.Model
+	Model
 	Email    string `json:"email" gorm:"unique"`
 	Password string `json:"-"`
 	Role     string `json:"-"`
@@ -28,9 +23,4 @@ func NewUser(email string, passwordHash string) *User {
 		Password: passwordHash,
 		Role:     "user",
 	}
-}
-
-type Claims struct {
-	Role string `json:"role"`
-	jwt.StandardClaims
 }

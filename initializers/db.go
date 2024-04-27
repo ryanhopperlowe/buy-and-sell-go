@@ -2,7 +2,7 @@ package initializers
 
 import (
 	"github.com/ryanhopperlowe/buy-and-sell-go/listing"
-	"github.com/ryanhopperlowe/buy-and-sell-go/user"
+	"github.com/ryanhopperlowe/buy-and-sell-go/model"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -21,5 +21,5 @@ func InitDB() {
 
 func MigrateDB() {
 	DB.AutoMigrate(&listing.Listing{})
-	DB.AutoMigrate(&user.User{})
+	DB.AutoMigrate(&model.User{})
 }

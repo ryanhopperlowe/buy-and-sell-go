@@ -1,4 +1,4 @@
-package user
+package service
 
 import (
 	"fmt"
@@ -10,26 +10,20 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/ryanhopperlowe/buy-and-sell-go/model"
+	"github.com/ryanhopperlowe/buy-and-sell-go/repository"
 	"golang.org/x/crypto/bcrypt"
 )
 
-type Service interface {
-	GetUsers(ctx *gin.Context)
-	GetUserById(ctx *gin.Context)
-	Signup(ctx *gin.Context)
-	Login(ctx *gin.Context)
+type UserService struct {
+	r *repository.UserRepository
 }
 
-type service struct {
-	r Repository
+func NewService(r *repository.UserRepository) *UserService {
+	return &UserService{r}
 }
 
-func NewService(r Repository) Service {
-	return &service{r}
-}
-
-func (s *service) Signup(ctx *gin.Context) {
-	var body SignupRequest
+func (s *UserService) Signup(ctx *gin.Context) {
+	var body model.SignupRequest
 
 	if err := ctx.BindJSON(&body); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Request"})
@@ -43,7 +37,7 @@ func (s *service) Signup(ctx *gin.Context) {
 		return
 	}
 
-	user, err := s.r.CreateUser(NewUser(body.Email, string(hash)))
+	user, err := s.r.CreateUser(model.NewUser(body.Email, string(hash)))
 
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -53,8 +47,8 @@ func (s *service) Signup(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, user)
 }
 
-func (s *service) Login(ctx *gin.Context) {
-	var body LoginRequest
+func (s *UserService) Login(ctx *gin.Context) {
+	var body model.LoginRequest
 
 	if err := ctx.BindJSON(&body); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Request"})
@@ -75,8 +69,7 @@ func (s *service) Login(ctx *gin.Context) {
 		return
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, Claims{
-		Role: user.Role,
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, model.Claims{
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
 			IssuedAt:  time.Now().Unix(),
@@ -85,7 +78,7 @@ func (s *service) Login(ctx *gin.Context) {
 		},
 	})
 
-	tokenString, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
+	tokenString, err := token.SignedString([]byte(os.Getenv("SECRET")))
 
 	if err != nil {
 		fmt.Println(err.Error())
@@ -93,10 +86,17 @@ func (s *service) Login(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"token": tokenString})
+	ctx.SetSameSite(http.SameSiteLaxMode)
+	ctx.SetCookie("Authorization", tokenString, 3600*24, "/", "", false, true)
+
+	ctx.JSON(http.StatusOK, gin.H{})
 }
 
-func (s *service) GetUserById(ctx *gin.Context) {
+func (s *UserService) ValidateToken(ctx *gin.Context) {
+	ctx.JSON(http.StatusOK, gin.H{"message": "Token is valid"})
+}
+
+func (s *UserService) GetUserById(ctx *gin.Context) {
 	id, err := strconv.ParseUint(ctx.Param("id"), 10, 64)
 
 	if err != nil {
@@ -114,7 +114,7 @@ func (s *service) GetUserById(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, user)
 }
 
-func (s *service) GetUsers(ctx *gin.Context) {
+func (s *UserService) GetUsers(ctx *gin.Context) {
 	users, err := s.r.GetUsers()
 
 	if err != nil {
