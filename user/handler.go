@@ -11,5 +11,7 @@ func MakeRoutes(r *gin.Engine, db *gorm.DB) {
 
 	r.GET("/users", service.GetUsers)
 	r.GET("/users/:id", service.GetUserById)
-	r.POST("/users", service.CreateUser)
+
+	r.POST("/signup", service.Signup)
+	r.POST("/login", service.Login)
 }

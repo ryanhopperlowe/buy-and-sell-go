@@ -1,6 +1,8 @@
 package listing
 
-import "github.com/ryanhopperlowe/buy-and-sell-go/model"
+import (
+	"github.com/ryanhopperlowe/buy-and-sell-go/model"
+)
 
 type Listing struct {
 	model.Model

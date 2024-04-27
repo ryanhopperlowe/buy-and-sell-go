@@ -6,7 +6,7 @@ import (
 )
 
 type Repository interface {
-	CreateUser(user CreateUserRequest) (*User, error)
+	CreateUser(user *User) (*User, error)
 	GetUserByEmail(email string) (*User, error)
 	GetUserById(id model.Identifier) (*User, error)
 	GetUsers() ([]User, error)
@@ -16,19 +16,18 @@ type repository struct {
 	db *gorm.DB
 }
 
-func NewRepository(db *gorm.DB) *repository {
+func NewRepository(db *gorm.DB) Repository {
 	return &repository{db}
 }
 
-func (r *repository) CreateUser(user CreateUserRequest) (*User, error) {
-	newUser := NewUser(user)
-	result := r.db.Create(&newUser)
+func (r *repository) CreateUser(user *User) (*User, error) {
+	result := r.db.Create(&user)
 
 	if result.Error != nil {
 		return nil, result.Error
 	}
 
-	return newUser, nil
+	return user, nil
 }
 
 func (r *repository) GetUserByEmail(email string) (*User, error) {

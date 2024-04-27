@@ -72,7 +72,6 @@ func (c *service) GetListingById(ctx *gin.Context) {
 }
 
 func (c *service) UpdateListing(ctx *gin.Context) {
-	// parse uint
 	id, err := strconv.ParseUint(ctx.Param("id"), 10, 64)
 
 	if err != nil {
