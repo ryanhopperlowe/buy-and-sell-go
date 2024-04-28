@@ -1,4 +1,4 @@
-package listing
+package service
 
 import (
 	"net/http"
@@ -6,25 +6,19 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/ryanhopperlowe/buy-and-sell-go/model"
+	"github.com/ryanhopperlowe/buy-and-sell-go/repository"
 )
 
-type Service interface {
-	CreateListing(ctx *gin.Context)
-	GetListings(ctx *gin.Context)
-	GetListingById(ctx *gin.Context)
-	UpdateListing(ctx *gin.Context)
+type ListingService struct {
+	r *repository.ListingRepository
 }
 
-type service struct {
-	r Repository
+func NewListingService(r *repository.ListingRepository) *ListingService {
+	return &ListingService{r}
 }
 
-func NewService(r Repository) Service {
-	return &service{r}
-}
-
-func (s *service) CreateListing(ctx *gin.Context) {
-	var newListing CreateRequest
+func (s *ListingService) CreateListing(ctx *gin.Context) {
+	var newListing model.CreateListingRequest
 
 	if err := ctx.BindJSON(&newListing); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -41,7 +35,7 @@ func (s *service) CreateListing(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, listing)
 }
 
-func (c *service) GetListings(ctx *gin.Context) {
+func (c *ListingService) GetListings(ctx *gin.Context) {
 	listings, err := c.r.GetListings()
 
 	if err != nil {
@@ -52,7 +46,7 @@ func (c *service) GetListings(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, listings)
 }
 
-func (c *service) GetListingById(ctx *gin.Context) {
+func (c *ListingService) GetListingById(ctx *gin.Context) {
 
 	id, err := strconv.ParseUint(ctx.Param("id"), 10, 64)
 
@@ -71,7 +65,7 @@ func (c *service) GetListingById(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, listing)
 }
 
-func (c *service) UpdateListing(ctx *gin.Context) {
+func (c *ListingService) UpdateListing(ctx *gin.Context) {
 	id, err := strconv.ParseUint(ctx.Param("id"), 10, 64)
 
 	if err != nil {
@@ -79,7 +73,7 @@ func (c *service) UpdateListing(ctx *gin.Context) {
 		return
 	}
 
-	var listing Listing
+	var listing model.Listing
 
 	if err := ctx.BindJSON(&listing); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

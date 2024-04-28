@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/ryanhopperlowe/buy-and-sell-go/controller"
 	"github.com/ryanhopperlowe/buy-and-sell-go/initializers"
-	"github.com/ryanhopperlowe/buy-and-sell-go/listing"
 )
 
 func Init() {
@@ -18,7 +17,7 @@ func main() {
 
 	r := gin.Default()
 
-	listing.MakeRoutes(r, initializers.DB)
+	controller.MakeListingRoutes(r, initializers.DB)
 	controller.MakeUserRoutes(r, initializers.DB)
 
 	r.Run()
