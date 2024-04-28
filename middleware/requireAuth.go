@@ -7,7 +7,7 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"github.com/ryanhopperlowe/buy-and-sell-go/initializers"
+	"github.com/ryanhopperlowe/buy-and-sell-go/db"
 	"github.com/ryanhopperlowe/buy-and-sell-go/model"
 )
 
@@ -51,7 +51,7 @@ func RequireAuth(ctx *gin.Context) {
 		}
 
 		var user model.User
-		result := initializers.DB.First(&user, model.Model{ID: model.Identifier(id)})
+		result := db.DB.First(&user, model.Model{ID: model.Identifier(id)})
 
 		if result.Error != nil {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "User not found"})

@@ -6,14 +6,14 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/ryanhopperlowe/buy-and-sell-go/model"
-	"github.com/ryanhopperlowe/buy-and-sell-go/repository"
+	"github.com/ryanhopperlowe/buy-and-sell-go/repo"
 )
 
 type ListingService struct {
-	r *repository.ListingRepository
+	r *repo.ListingRepository
 }
 
-func NewListingService(r *repository.ListingRepository) *ListingService {
+func NewListingService(r *repo.ListingRepository) *ListingService {
 	return &ListingService{r}
 }
 

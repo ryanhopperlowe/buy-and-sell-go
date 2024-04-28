@@ -10,15 +10,15 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/ryanhopperlowe/buy-and-sell-go/model"
-	"github.com/ryanhopperlowe/buy-and-sell-go/repository"
+	"github.com/ryanhopperlowe/buy-and-sell-go/repo"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type UserService struct {
-	r *repository.UserRepository
+	r *repo.UserRepository
 }
 
-func NewService(r *repository.UserRepository) *UserService {
+func NewService(r *repo.UserRepository) *UserService {
 	return &UserService{r}
 }
 

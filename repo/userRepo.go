@@ -1,4 +1,4 @@
-package repository
+package repo
 
 import (
 	"github.com/ryanhopperlowe/buy-and-sell-go/model"

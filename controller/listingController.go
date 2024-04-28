@@ -2,13 +2,13 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/ryanhopperlowe/buy-and-sell-go/repository"
+	"github.com/ryanhopperlowe/buy-and-sell-go/repo"
 	"github.com/ryanhopperlowe/buy-and-sell-go/service"
 	"gorm.io/gorm"
 )
 
 func MakeListingRoutes(r *gin.Engine, db *gorm.DB) {
-	repo := repository.NewListingRepository(db)
+	repo := repo.NewListingRepository(db)
 	service := service.NewListingService(repo)
 
 	r.GET("/listings", service.GetListings)

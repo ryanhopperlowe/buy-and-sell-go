@@ -1,4 +1,4 @@
-package initializers
+package db
 
 import (
 	"github.com/ryanhopperlowe/buy-and-sell-go/model"
