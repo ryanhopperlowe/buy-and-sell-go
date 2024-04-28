@@ -1,34 +1,23 @@
 package model
 
-import "github.com/dgrijalva/jwt-go"
+import (
+	"time"
+
+	"github.com/dgrijalva/jwt-go"
+)
 
 type Claims struct {
 	jwt.StandardClaims
 }
 
-func NewClaims(claimMap map[string]interface{}) (*Claims, error) {
-	ExpiresAt, ok := claimMap["exp"].(int64)
-	if !ok {
-		return nil, jwt.ValidationError{}
-	}
-
-	Issuer, ok := claimMap["iss"].(string)
-	if !ok {
-		return nil, jwt.ValidationError{}
-	}
-
-	Subject, ok := claimMap["sub"].(string)
-	if !ok {
-		return nil, jwt.ValidationError{}
-	}
-
-	claims := &Claims{
+func DefaultClaims(subject string) *Claims {
+	return &Claims{
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: ExpiresAt,
-			Issuer:    Issuer,
-			Subject:   Subject,
+			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
+			IssuedAt:  time.Now().Unix(),
+			Issuer:    "buy-and-sell",
+			Subject:   subject,
+			NotBefore: time.Now().Unix(),
 		},
 	}
-
-	return claims, nil
 }

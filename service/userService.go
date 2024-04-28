@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -69,14 +68,8 @@ func (s *UserService) Login(ctx *gin.Context) {
 		return
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, model.Claims{
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
-			IssuedAt:  time.Now().Unix(),
-			Issuer:    "buy-and-sell",
-			Subject:   strconv.FormatUint(uint64(user.ID), 10),
-		},
-	})
+	claims := model.DefaultClaims(strconv.FormatUint(uint64(user.ID), 10))
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	tokenString, err := token.SignedString([]byte(os.Getenv("SECRET")))
 
@@ -87,7 +80,7 @@ func (s *UserService) Login(ctx *gin.Context) {
 	}
 
 	ctx.SetSameSite(http.SameSiteLaxMode)
-	ctx.SetCookie("Authorization", tokenString, 3600*24, "/", "", false, true)
+	ctx.SetCookie("Authorization", tokenString, 3600*24*30, "/", "", false, true)
 
 	ctx.JSON(http.StatusOK, gin.H{})
 }

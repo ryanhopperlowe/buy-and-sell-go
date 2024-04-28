@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type Identifier uint
+type Identifier = uint
 
 type Model struct {
 	ID        Identifier   `gorm:"primarykey" json:"id"`
